@@ -14,8 +14,8 @@ const deployFunction: DeployFunction = async function (hre: HardhatRuntimeEnviro
   const { deployments, getNamedAccounts } = hre;
   const { proxyOwner } = await getNamedAccounts();
   
-  await deployments.deploy('DemoCoin', {
-    contract: 'DemoCoin',
+  await deployments.deploy('StableCoin', {
+    contract: 'StableCoin',
     from: proxyOwner,
     log: true,
     proxy: {
@@ -41,4 +41,4 @@ export default deployFunction;
  * Deploy function tags.
  */
 
-deployFunction.tags = ['DemoCoin'];
+deployFunction.tags = ['StableCoin'];
