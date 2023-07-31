@@ -27,15 +27,15 @@ export async function deployEduPoolFixture(): Promise<Contract> {
 }
 
 /**
- * Get StableCoin fixture.
+ * Get EduPool fixture.
  */
 
-export async function getStableCoinFixture(): Promise<Contract> {
+export async function getEduPoolFixture(): Promise<Contract> {
   await deployments.fixture();
 
-  const stablecoinContractDeployment = await deployments.get('EduPool');
+  const contractDeployment = await deployments.get('EduPool');
 
-  return ethers.getContractAt(stablecoinContractDeployment.abi, stablecoinContractDeployment.address);
+  return ethers.getContractAt(contractDeployment.abi, contractDeployment.address);
 }
 
 /**
