@@ -43,7 +43,7 @@ export async function deployStableCoinFixture(data: StableCoinFixtureData = {}):
 export async function getStableCoinFixture(): Promise<Contract> {
   await deployments.fixture();
 
-  const stablecoinContractDeployment = await deployments.get('DemoCoin');
+  const stablecoinContractDeployment = await deployments.get('StableCoin');
 
   return ethers.getContractAt(stablecoinContractDeployment.abi, stablecoinContractDeployment.address);
 }

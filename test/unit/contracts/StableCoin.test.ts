@@ -6,6 +6,7 @@
 import { Contract } from 'ethers';
 import { deployments, ethers, getNamedAccounts, getUnnamedAccounts } from 'hardhat';
 import { expect } from 'chai';
+import {deployStableCoinFixture} from '../fixtures/stablecoin-fixture';
 
 /**
  * StableCoin tests.
@@ -13,32 +14,9 @@ import { expect } from 'chai';
 
 describe('StableCoin', () => {
   let stablecoinContract: Contract;
-  const stablecoinFixture = deployments.createFixture(async ({ deployments, getNamedAccounts }) => {
-    const { proxyOwner } = await getNamedAccounts();
-
-    await deployments.fixture();
-
-    const stablecoinContractDeployment = await deployments.deploy('StableCoin', {
-      contract: 'StableCoin',
-      from: proxyOwner,
-      log: true,
-      proxy: {
-        execute: {
-          init: {
-            args: [],
-            methodName: 'initialize'
-          }
-        },
-        owner: proxyOwner,
-        proxyContract: 'OpenZeppelinTransparentProxy'
-      }
-    });
-    
-    return ethers.getContractAt(stablecoinContractDeployment.abi, stablecoinContractDeployment.address);
-  });
 
   beforeEach(async () => {
-    stablecoinContract = await stablecoinFixture();
+    stablecoinContract = await deployStableCoinFixture();
   });
 
   describe('initialize', () => {
