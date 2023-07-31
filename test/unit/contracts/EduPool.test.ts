@@ -4,10 +4,13 @@
  */
 
 import { Contract } from 'ethers';
-import { deployments, ethers, getNamedAccounts, getUnnamedAccounts } from 'hardhat';
+import { deployments, ethers, getNamedAccounts, getUnnamedAccounts, upgrades } from 'hardhat';
 import { expect } from 'chai';
 import { getStableCoinFixture } from '../fixtures/stablecoin-fixture';
 import { deployEduPoolFixture, EduPoolFixtureData } from '../fixtures/edupool-fixture';
+import { getContractFactory } from '@nomicfoundation/hardhat-ethers/types';
+
+
 
 /**
  * EduPool tests.
@@ -41,6 +44,25 @@ describe('EduPool', () => {
           interestRate
         )
       ).to.be.revertedWith("Initializable: contract is already initialized");
+    });
+
+    it('should the `EduPool` contract allow for a proxy to initialize', async () => {
+      const { deployer } = await getNamedAccounts();
+      const [alice] = await getUnnamedAccounts();
+
+      const proxyContract = await upgrades.deployProxy( 
+        await ethers.getContractFactory('EduPool'),
+        [
+          poolName,
+          await stablecoinContract.getAddress(),
+          alice,
+          interestPeriod,
+          interestRate
+        ], 
+        { kind: 'transparent' }
+      );
+
+      expect( await proxyContract.name() ).to.equal(poolName);
     });
   });
 
