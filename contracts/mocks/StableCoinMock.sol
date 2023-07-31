@@ -5,10 +5,10 @@ pragma solidity ^0.8.16;
  * Contract dependencies.
  */
 
-import "../DemoCoin.sol";
+import "../StableCoin.sol";
 
-/// @title DemoCoinMock contract for DemoCoin.
-contract DemoCoinMock is DemoCoin {
+/// @title StableCoinMock contract for StableCoin.
+contract StableCoinMock is StableCoin {
     /**
      * @notice Returns mock flag.
      */
