@@ -14,9 +14,11 @@ import {deployStableCoinFixture} from '../fixtures/stablecoin-fixture';
 
 describe('StableCoin', () => {
   let stablecoinContract: Contract;
+  const amount = ethers.formatUnits( 10, 'wei' );
 
   beforeEach(async () => {
-    stablecoinContract = await deployStableCoinFixture();
+    const { proxyOwner } = await getNamedAccounts();
+    stablecoinContract = await deployStableCoinFixture(proxyOwner);
   });
 
   describe('initialize', () => {
@@ -71,8 +73,6 @@ describe('StableCoin', () => {
 
     it('should upgrade the `StableCoin` contract and call an inherited method from the previous deploy', async () => {
       const { proxyOwner } = await getNamedAccounts();
-      const proxyOwnerWallet = await ethers.getSigner(proxyOwner);
-      const [alice] = await getUnnamedAccounts();
       const stablecoinContractDeployment = await deployments.deploy('StableCoin', {
         contract: 'StableCoinMock',
         from: proxyOwner,
@@ -86,6 +86,26 @@ describe('StableCoin', () => {
 
       expect(await stablecoinContractMock.version()).to.equal(1);
       expect(await stablecoinContract.getAddress()).to.equal(await stablecoinContractMock.getAddress());
+    });
+  });
+
+  describe('mint', () => {
+    it('should only the owner by allowed to mint `StableCoin`', async () => {
+      const [alice, chuck] = await getUnnamedAccounts();
+      const chuckWallet = await ethers.getSigner(chuck);
+
+      await expect(stablecoinContract.connect(chuckWallet).mint(alice, amount))
+        .to.be.revertedWith('Ownable: caller is not the owner');
+    });
+
+    it('should mint `StableCoin`', async () => {
+      const { proxyOwner } = await getNamedAccounts();
+      const [alice] = await getUnnamedAccounts();
+      const proxyOwnerWallet = await ethers.getSigner(proxyOwner);
+
+      expect(stablecoinContract.connect(proxyOwnerWallet).mint(alice, amount))
+        .to.emit(stablecoinContract, 'Transfer')
+        .withArgs( ethers.ZeroAddress, alice, amount );
     });
   });
 

@@ -12,9 +12,9 @@ import { ABI, Address } from 'hardhat-deploy/types';
  * Deploy StableCoin fixture.
  */
 
-export async function deployStableCoinFixture(data: StableCoinFixtureData = {}): Promise<Contract> {
+export async function deployStableCoinFixture(proxyOwner: string): Promise<Contract> {
   const stablecoinDeployment = await deployments.createFixture(async ({ deployments, getNamedAccounts }) => {
-    const { proxyOwner } = await getNamedAccounts();
+    // const { proxyOwner } = await getNamedAccounts();
 
     return deployments.deploy('StableCoin', {
       contract: 'StableCoin',

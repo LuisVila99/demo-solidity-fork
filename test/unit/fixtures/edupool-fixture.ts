@@ -5,7 +5,7 @@
  */
 
 import { Contract, BigNumberish } from 'ethers';
-import { deployments, ethers } from 'hardhat';
+import { deployments, ethers, upgrades } from 'hardhat';
 import { ABI, Address } from 'hardhat-deploy/types';
 
 /**
@@ -36,6 +36,31 @@ export async function getEduPoolFixture(): Promise<Contract> {
   const contractDeployment = await deployments.get('EduPool');
 
   return ethers.getContractAt(contractDeployment.abi, contractDeployment.address);
+}
+
+/**
+ * Deploy Proxy to EduPool fixture
+ * 
+ * @param data The EduPool initialization data
+ * @returns the deployed cproxy contract
+ */
+export async function deployProxyFixture(data: EduPoolFixtureData): Promise<Contract> {
+  const contractDeployment = await deployments.createFixture(async ({ upgrades }) => {
+
+    return await upgrades.deployProxy( 
+      await ethers.getContractFactory('EduPool'),
+      [
+        data.name,
+        data.stablecoin,
+        data.borrower,
+        data.interestPeriod,
+        data.interestRate
+      ], 
+      { kind: 'transparent',  }
+    );
+  })();
+
+  return contractDeployment;
 }
 
 /**
