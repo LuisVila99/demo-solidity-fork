@@ -8,7 +8,7 @@ pragma solidity ^0.8.16;
 import "../../pool/EduPool.sol";
 
 /// @title EduPoolMock contract for EduPool.
-contract EduPoolMock is EduPool {
+contract EduPoolMock is EduPool{
     /**
      * @notice Returns mock flag.
      */
