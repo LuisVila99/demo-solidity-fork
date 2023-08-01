@@ -2,10 +2,11 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/interfaces/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 
-contract EduPool is Initializable {
+contract EduPool is Initializable, OwnableUpgradeable {
 
     enum Status {
         Pending,
@@ -76,6 +77,7 @@ contract EduPool is Initializable {
     {
         require(_interestPeriod > 0, "Insufficient interest period");
 
+        __Ownable_init();
         pool.name = _name;
         pool.status = Status.Pending;
         pool.stablecoin = IERC20Upgradeable(_stablecoin);
