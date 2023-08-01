@@ -5,11 +5,38 @@ import './EduPoolBase.sol';
 
 abstract contract EduPoolLiquidity is EduPoolBase {
 
+    // Modifiers
+
+    modifier onlyIssuer {
+        require( pool.issuers[_msgSender()] != 0, "Sender is not an issuer" );
+        _;
+    }
+
+    // Events
+
     event Provided(
         string indexed name,
-        address indexed provider,
+        address indexed issuer,
         uint256 amount
     );
+
+    event Withdrawn(
+        string indexed name,
+        address indexed issuer,
+        uint256 amount
+    );
+
+    // Public view functions
+
+    function balanceOf(address issuer) public view returns (uint256) {
+        return pool.issuers[ issuer ];
+    }
+
+    function balance() public view returns (uint256) {
+        return pool.balance;
+    }
+
+    // Public write functions
 
     function provide(uint256 amount) external onlyActivePool {
         require(
@@ -27,11 +54,14 @@ abstract contract EduPoolLiquidity is EduPoolBase {
         emit Provided( pool.name, _msgSender(), amount );
     }
 
-    function balanceOf(address issuer) public view returns (uint256) {
-        return pool.issuers[ issuer ];
-    }
+    function withdraw( uint256 amount ) external onlyActivePool onlyIssuer {
+        require( pool.issuers[_msgSender()] >= amount, "Not enough issuer balance" );
+        require( pool.balance >= amount, "Not enough pool balance" );
 
-    function balance() public view returns (uint256) {
-        return pool.balance;
+        pool.stablecoin.transfer( _msgSender(), amount );
+        pool.issuers[_msgSender()] -= amount;
+        pool.balance -= amount;
+
+        emit Withdrawn( pool.name, _msgSender(), amount );
     }
 }

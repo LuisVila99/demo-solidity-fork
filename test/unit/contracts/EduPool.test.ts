@@ -126,7 +126,7 @@ describe("EduPool", () => {
         .withArgs(poolName, chuck, amount);
     });
 
-    it("should update the 'EduPool' balance and issuer balance", async () => {
+    it("providing liquidity should update the 'EduPool' balance and issuer balance", async () => {
       const { proxyOwner } = await getNamedAccounts();
       const [alice, chuck] = await getUnnamedAccounts();
 
@@ -156,6 +156,61 @@ describe("EduPool", () => {
       expect(await proxyContract.balanceOf(chuck)).to.equal(
         initialBalanceIssuer + amount
       );
+    });
+
+    it("should be able to withdraw `StableCoin` from `EduPool`", async () => {
+      const { proxyOwner } = await getNamedAccounts();
+      const [alice, chuck] = await getUnnamedAccounts();
+
+      const proxyOwnerWallet = await ethers.getSigner(proxyOwner);
+      const aliceWallet = await ethers.getSigner(alice);
+      const chuckWallet = await ethers.getSigner(chuck);
+
+      const proxyContract = await deployProxyFixture({
+        name: poolName,
+        stablecoin: await stablecoinContract.getAddress(),
+        borrower: alice,
+        interestPeriod: interestPeriod,
+        interestRate: interestRate,
+      });
+
+      await proxyContract.connect(aliceWallet).activate();
+      await stablecoinContract.connect(proxyOwnerWallet).mint(chuck, amount);
+      await stablecoinContract
+        .connect(chuckWallet)
+        .approve(await proxyContract.getAddress(), amount);
+      await proxyContract.connect(chuckWallet).provide(amount);
+
+      expect(await proxyContract.connect(chuckWallet).withdraw(amount))
+        .to.emit(proxyContract, "Wtidrawn")
+        .withArgs(poolName, chuck, amount);
+    });
+
+    it("should not be able to withdraw not available `StableCoin` balance from `EduPool`", async () => {
+      const { proxyOwner } = await getNamedAccounts();
+      const [alice, chuck] = await getUnnamedAccounts();
+
+      const proxyOwnerWallet = await ethers.getSigner(proxyOwner);
+      const aliceWallet = await ethers.getSigner(alice);
+      const chuckWallet = await ethers.getSigner(chuck);
+
+      const proxyContract = await deployProxyFixture({
+        name: poolName,
+        stablecoin: await stablecoinContract.getAddress(),
+        borrower: alice,
+        interestPeriod: interestPeriod,
+        interestRate: interestRate,
+      });
+
+      await proxyContract.connect(aliceWallet).activate();
+      await stablecoinContract.connect(proxyOwnerWallet).mint(chuck, amount);
+      await stablecoinContract
+        .connect(chuckWallet)
+        .approve(await proxyContract.getAddress(), amount);
+      await proxyContract.connect(chuckWallet).provide(amount);
+
+      await expect(proxyContract.connect(chuckWallet).withdraw(amount*2))
+        .to.be.revertedWith( 'Not enough issuer balance' );
     });
   });
 });

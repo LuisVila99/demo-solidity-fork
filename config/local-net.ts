@@ -5,7 +5,7 @@
 
 module.exports = {
     accounts: {
-      mnemonic: 'ill shift duck clarify away country sleep demise style orange engine coast'
+      mnemonic: 'fun inch jealous paddle impose cereal accident around inhale series twelve tiger'
     },
     hardhat: {
       paths: {
