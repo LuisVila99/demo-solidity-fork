@@ -22,7 +22,7 @@ contract StableCoin is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable
         _mint(to, amount);
     }
 
-    function version() external pure returns (uint256) {
-        return 1;
+    function version() external pure returns (string memory) {
+        return "1.0.0";
     }
 }

@@ -84,7 +84,7 @@ describe('StableCoin', () => {
 
       const stablecoinContractMock = await ethers.getContractAt(stablecoinContractDeployment.abi, stablecoinContractDeployment.address);
 
-      expect(await stablecoinContractMock.version()).to.equal(1);
+      expect(await stablecoinContractMock.version()).to.equal('1.0.0');
       expect(await stablecoinContract.getAddress()).to.equal(await stablecoinContractMock.getAddress());
     });
   });
