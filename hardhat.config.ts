@@ -7,6 +7,7 @@ import '@openzeppelin/hardhat-upgrades';
 import '@nomicfoundation/hardhat-chai-matchers';
 import '@typechain/hardhat';
 import 'hardhat-deploy';
+import 'solidity-coverage';
 import config from 'config';
 import './tasks';
 import { HardhatUserConfig } from "hardhat/config";
