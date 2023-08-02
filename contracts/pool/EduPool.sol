@@ -3,8 +3,9 @@ pragma solidity ^0.8.9;
 
 import "./EduPoolBase.sol";
 import "./EduPoolLiquidity.sol";
+import "./EduPoolLoan.sol";
 
-contract EduPool is EduPoolBase, EduPoolLiquidity {
+contract EduPool is EduPoolBase, EduPoolLiquidity, EduPoolLoan {
 
     // Public View functions
 
