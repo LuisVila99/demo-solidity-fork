@@ -37,7 +37,7 @@ export async function deployMyCurrencyFixture(): Promise<Contract> {
 }
 
 /**
- * Get StableCoin fixture.
+ * Get MyCurrency fixture.
  */
 
 export async function getMyCurrencyFixture(): Promise<Contract> {
