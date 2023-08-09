@@ -12,3 +12,6 @@ artifacts
 
 # Exclude development deplayments
 deployments/localNet
+
+# Exclude idea metadata
+.vscode 
