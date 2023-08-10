@@ -4,15 +4,13 @@
  */
 
 import { Contract } from 'ethers';
-import { deployments,
-         ethers, 
-         getNamedAccounts, 
+import { getNamedAccounts, 
          getUnnamedAccounts } from 'hardhat';
 import { expect } from 'chai';
 import { deployMyNFTFixture } from '../fixtures/mynft-fixture';
 
 /**
- * MyCurrency tests.
+ * MyNFT tests.
  */
 
 describe('MyNFT', () => {
@@ -41,5 +39,33 @@ describe('MyNFT', () => {
       const { proxyOwner } = await getNamedAccounts();
       expect(await mynftContract.owner()).to.equal(proxyOwner); 
     });
+  });
+
+  describe("Methods", function () {
+    it("Should mint one token to the contract owner",
+      async function () {
+        const { proxyOwner } = await getNamedAccounts();
+        await mynftContract.safeMint(proxyOwner, 1);
+        expect(await mynftContract.balanceOf(proxyOwner)).
+          to.equal(1n);
+      });
+
+    it("Should fail minting the same token twice",
+      async function () {
+        const { proxyOwner } = await getNamedAccounts();
+        await expect(mynftContract.safeMint(proxyOwner, 1)).
+          to.be.revertedWith('ERC721: token already minted');
+      });
+
+    it("Transfer a token from one account to another", 
+      async function () {
+        const { proxyOwner } = await getNamedAccounts();
+        const [account1] = await getUnnamedAccounts();
+        await mynftContract.safeTransferFrom(proxyOwner, account1, 1);
+        expect(await mynftContract.balanceOf(account1)).
+          to.equal(1n);
+        expect(await mynftContract.balanceOf(proxyOwner)).
+          to.equal(0n);
+      });
   });
 });
