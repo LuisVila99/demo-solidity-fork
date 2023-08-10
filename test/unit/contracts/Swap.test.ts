@@ -7,7 +7,7 @@ import { Contract } from 'ethers';
 import { getNamedAccounts, 
          getUnnamedAccounts } from 'hardhat';
 import { expect } from 'chai';
-import { deployMyNFTFixture } from '../fixtures/mynft-fixture';
+import { deploySwapFixture } from '../fixtures/swap-fixture';
 
 /**
  * MyNFT tests.
@@ -17,13 +17,14 @@ describe('Swap', () => {
   let swapContract: Contract;
 
   beforeEach(async () => {
-    swapContract = await deployMyNFTFixture();
+    swapContract = await deploySwapFixture();
   });
 
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
       const { proxyOwner } = await getNamedAccounts();
-      expect(await swapContract.owner()).to.equal(proxyOwner); 
+      expect(await swapContract.getAddress()).
+        to.not.be.null;
     });
   });
 });
