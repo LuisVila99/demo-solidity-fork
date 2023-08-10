@@ -1,55 +1,36 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "./MyNFT.sol";
+import "./MyCurrency.sol"; 
 
-contract Swap is Initializable, OwnableUpgradeable {
-    using SafeERC20Upgradeable for IERC20Upgradeable;
+contract Swap {
+    MyNFT public erc721Contract;
+    MyCurrency public erc20Contract;
+    uint256 public exchangeRate;
 
-    IERC721Upgradeable public myNft;
-    IERC20Upgradeable public coin;
-
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
+    constructor(address _erc721Address, address _erc20Address) {
+        erc721Contract = MyNFT(_erc721Address);
+        erc20Contract = MyCurrency(_erc20Address);
+        exchangeRate = 10;
     }
 
-    function initialize(IERC721Upgradeable _myNft, IERC20Upgradeable _coin) 
-      initializer public {
-        __Ownable_init();
-        myNft = _myNft;
-        coin = _coin;
-    }
-
-    function swapNftForCoin(uint256 tokenId) public {
-        require(myNft.ownerOf(tokenId) == msg.sender, 
-        "You must own the NFT to swap");
+    function purchaseToken(uint256 tokenId) external {
+        require(erc721Contract.ownerOf(tokenId) == address(this),
+        "Token not available for purchase");
+        require(erc20Contract.balanceOf(msg.sender) >= exchangeRate, 
+        "Insufficient ERC20 balance");
         
-        myNft.safeTransferFrom(msg.sender, address(this), tokenId);
-
-        // Transfer the specified amount of coins to the sender
-        uint256 coinAmount = 100; // You can adjust this value as needed
-        coin.safeTransfer(msg.sender, coinAmount);
+        erc20Contract.transferFrom(msg.sender, address(this), exchangeRate); 
+        erc721Contract.transferFrom(address(this), msg.sender, tokenId); 
     }
 
 
-    function swapCoinForNFT(uint256 tokenId) public {
+    function sellToken(uint256 tokenId) external {
+        require(erc721Contract.ownerOf(tokenId) == msg.sender, 
+        "You don't own this token");
 
-      uint256 coinAmount = 100; 
-      coin.safeTransferFrom(msg.sender, address(this), coinAmount);
-
-      myNft.safeTransferFrom(address(this), msg.sender, tokenId);
-    }
-
-    function setMyNft(IERC721Upgradeable _myNft) public onlyOwner {
-        myNft = _myNft;
-    }
-
-    function setCoin(IERC20Upgradeable _coin) public onlyOwner {
-        coin = _coin;
+        erc20Contract.transfer(msg.sender, exchangeRate);
+        erc721Contract.transferFrom(msg.sender, address(this), tokenId);
     }
 }
