@@ -12,7 +12,7 @@ contract Swap {
     constructor(address _erc721Address, address _erc20Address) {
         erc721Contract = MyNFT(_erc721Address);
         erc20Contract = MyCurrency(_erc20Address);
-        exchangeRate = 10;
+        exchangeRate = 100;
     }
 
     function purchaseToken(uint256 tokenId) external {
@@ -27,10 +27,12 @@ contract Swap {
 
 
     function sellToken(uint256 tokenId) external {
-        require(erc721Contract.ownerOf(tokenId) == msg.sender, 
-        "You don't own this token");
+        address tokenOwner = erc721Contract.ownerOf(tokenId);
 
-        erc20Contract.transfer(msg.sender, exchangeRate);
+        require(tokenOwner == msg.sender || erc721Contract.getApproved(tokenId) == msg.sender,
+        "Sender not the owner of the token");
+
         erc721Contract.transferFrom(msg.sender, address(this), tokenId);
+        erc20Contract.transfer(msg.sender, exchangeRate);
     }
 }

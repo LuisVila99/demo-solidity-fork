@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-import { Contract } from 'ethers';
+import { Contract, Signer } from 'ethers';
 import { deployments, ethers } from 'hardhat';
 import { ABI, Address } from 'hardhat-deploy/types';
 import { deployMyNFTFixture } from './mynft-fixture';
@@ -33,9 +33,12 @@ export async function deploySwapFixture(): Promise<Contract> {
       });
   })();
 
+  const signer = await ethers.provider.getSigner();
+
   return ethers.getContractAt(
     swapDeployment.abi as ABI,
-    swapDeployment.address as Address
+    swapDeployment.address as Address,
+    signer
   );
 }
 
