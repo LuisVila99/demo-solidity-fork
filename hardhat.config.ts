@@ -29,6 +29,7 @@ const networksConfigs: HttpNetworkUserConfig = {
 const hardhatUserConfig: HardhatUserConfig = {
   namedAccounts: {
     proxyOwner: 0,
+    other: 1
   },
   networks: {
     hardhat: config.get('accounts'),

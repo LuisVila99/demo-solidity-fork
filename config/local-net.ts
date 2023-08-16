@@ -15,7 +15,9 @@ module.exports = {
     network: {
       chainId: 1337,
       name: "localNet",
-      url: "http://127.0.0.1:7545"
+      url: "http://127.0.0.1:7545",
+      // gas: "auto",
+      gasPrice: 0
     }
   };
   

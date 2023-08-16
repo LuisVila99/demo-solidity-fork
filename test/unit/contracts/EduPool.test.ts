@@ -10,8 +10,6 @@ import {
   deployEduPoolFixture,
   deployProxyFixture,
 } from "../fixtures/edupool-fixture";
-import { proxy } from "../../../typechain-types/@openzeppelin/contracts-upgradeable";
-import exp from "constants";
 
 /**
  * EduPool tests.
@@ -74,25 +72,26 @@ describe("EduPool", () => {
       ).to.be.revertedWith("Initializable: contract is already initialized");
     });
 
-    it("should the `EduPool` contract allow for a proxy to initialize", async () => {
-      const { deployer } = await getNamedAccounts();
-      const [alice] = await getUnnamedAccounts();
+    it("should the `EduPool` contract allow for a proxy to initialize", 
+      async () => {
+        const { deployer } = await getNamedAccounts();
+        const [alice] = await getUnnamedAccounts();
 
-      const proxyContract = await deployProxyFixture({
-        name: poolName,
-        stablecoin: await stablecoinContract.getAddress(),
-        borrower: alice,
-        interestPeriod: interestPeriod,
-        interestRate: interestRate,
+        const proxyContract = await deployProxyFixture({
+          name: poolName,
+          stablecoin: await stablecoinContract.getAddress(),
+          borrower: alice,
+          interestPeriod: interestPeriod,
+          interestRate: interestRate,
+        });
+
+        expect(await proxyContract.name()).to.equal(poolName);
+        expect(await proxyContract.version()).to.equal("0.1.0");
+        expect(await proxyContract.stablecoin()).to.equal(
+          await stablecoinContract.getAddress()
+        );
+        expect(await proxyContract.status()).to.equal("pending");
       });
-
-      expect(await proxyContract.name()).to.equal(poolName);
-      expect(await proxyContract.version()).to.equal("0.1.0");
-      expect(await proxyContract.stablecoin()).to.equal(
-        await stablecoinContract.getAddress()
-      );
-      expect(await proxyContract.status()).to.equal("pending");
-    });
   });
 
   describe("activate", () => {
@@ -145,7 +144,8 @@ describe("EduPool", () => {
         .withArgs(poolName, chuck, amount);
     });
 
-    it("providing liquidity should update the 'EduPool' balance and issuer balance", async () => {
+    it(`providing liquidity should update the 'EduPool'
+        balance and issuer balance`, async () => {
       const { proxyOwner } = await getNamedAccounts();
       const [alice, chuck] = await getUnnamedAccounts();
 
@@ -181,7 +181,8 @@ describe("EduPool", () => {
         .withArgs(poolName, chuck, amount);
     });
 
-    it("should not be able to withdraw not available `StableCoin` balance from `EduPool`", async () => {
+    it(`should not be able to withdraw not available 
+       'StableCoin' balance from 'EduPool'`, async () => {
       const { proxyOwner } = await getNamedAccounts();
       const [alice, chuck] = await getUnnamedAccounts();
 

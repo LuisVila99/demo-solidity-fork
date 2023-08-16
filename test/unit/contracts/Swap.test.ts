@@ -11,7 +11,6 @@ import { getNamedAccounts,
 import { expect } from 'chai';
 import { deploySwapFixture } from '../fixtures/swap-fixture';
 import { ABI, Address } from 'hardhat-deploy/types';
-import { sign } from 'crypto';
 
 /**
  * MyNFT tests.
@@ -67,6 +66,27 @@ describe('Swap', () => {
         .to.equal(1n);
       expect(await myCurrencyContract.balanceOf(swapContract.getAddress()))
         .to.equal(100n);
+    })
+
+    it("Should allow to check the contract's current exchange rate",
+    async function () {
+      expect(await swapContract.checkExchangeRate())
+        .to.equal(100);
+    })
+
+    it("Should allow contract owner to change the exchange rate",
+    async function () {
+      await swapContract.setExchangeRate(200);
+      expect(await swapContract.checkExchangeRate())
+        .to.equal(200);
+    })
+
+    xit("Should not allow non owners to change the exchange rate",
+    async function () {
+      const [account] = await getUnnamedAccounts();
+      let signer = await ethers.getSigner(account)
+      expect(await swapContract.connect(signer).setExchangeRate(200))
+          .to.be.revertedWith(`Ownable: caller is not the owner`);
     })
   })
 });

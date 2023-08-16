@@ -2,12 +2,13 @@
 pragma solidity ^0.8.9;
 
 import "./MyNFT.sol";
-import "./MyCurrency.sol"; 
+import "./MyCurrency.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Swap {
+contract Swap is Ownable {
     MyNFT public erc721Contract;
     MyCurrency public erc20Contract;
-    uint256 public exchangeRate;
+    uint16 public exchangeRate;
 
     constructor(address _erc721Address, address _erc20Address) {
         erc721Contract = MyNFT(_erc721Address);
@@ -34,5 +35,15 @@ contract Swap {
 
         erc721Contract.transferFrom(msg.sender, address(this), tokenId);
         erc20Contract.transfer(msg.sender, exchangeRate);
+    }
+
+
+    function setExchangeRate(uint16 _exchangeRate) public onlyOwner { 
+        exchangeRate = _exchangeRate;
+    }
+
+
+    function checkExchangeRate() public view returns (uint16) {
+        return exchangeRate;
     }
 }
