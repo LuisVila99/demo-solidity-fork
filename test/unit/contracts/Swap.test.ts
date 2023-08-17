@@ -81,12 +81,12 @@ describe('Swap', () => {
         .to.equal(200);
     })
 
-    xit("Should not allow non owners to change the exchange rate",
-    async function () {
-      const [account] = await getUnnamedAccounts();
-      let signer = await ethers.getSigner(account)
-      expect(await swapContract.connect(signer).setExchangeRate(200))
-          .to.be.revertedWith(`Ownable: caller is not the owner`);
-    })
+    it("Should not allow non-owners to change the exchange rate", async function () {
+      const [ownerAccount, nonOwnerAccount] = await getUnnamedAccounts();
+      let nonOwnerSigner = await ethers.getSigner(nonOwnerAccount);
+      await expect(swapContract.connect(nonOwnerSigner).setExchangeRate(200))
+        .to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
   })
 });
