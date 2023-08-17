@@ -23,6 +23,7 @@ const deployFunction: DeployFunction =
         contract: 'Swap',
         from: proxyOwner,
         log: true,
+        gasLimit: 2000000,
         nonce: 'pending',
         skipIfAlreadyDeployed: true,
         args: [nftInfo.address,

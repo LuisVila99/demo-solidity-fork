@@ -18,6 +18,7 @@ const deployFunction: DeployFunction = async function (hre: HardhatRuntimeEnviro
     contract: 'MyNFT',
     from: proxyOwner,
     log: true,
+    gasLimit: 2000000,
     proxy: {
       execute: {
         init: {
